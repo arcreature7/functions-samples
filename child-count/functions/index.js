@@ -24,7 +24,7 @@ exports.countlikechange = functions.database.ref('/posts/{postid}/likes/{likeid}
   const collectionRef = event.data.ref.parent;
   const countRef = collectionRef.parent.child('likes_count');
 
-  let increment; 
+  let increment;
   if (event.data.exists() && !event.data.previous.exists()) {
     increment = 1;
   }
@@ -34,12 +34,12 @@ exports.countlikechange = functions.database.ref('/posts/{postid}/likes/{likeid}
     return null;
   }
 
-  // Return the promise from countRef.transaction() so our function 
+  // Return the promise from countRef.transaction() so our function
   // waits for this async event to complete before it exits.
   return countRef.transaction(current => {
     (current || 0) + increment;
-}).then(() => {
-  return console.log('Counter updated.'); 
+  }).then(() => {
+    return console.log('Counter updated.');
   });
 });
 
@@ -48,8 +48,8 @@ exports.recountlikes = functions.database.ref('/posts/{postid}/likes_count').onW
   if (!event.data.exists()) {
     const counterRef = event.data.ref;
     const collectionRef = counterRef.parent.child('likes');
-    
-    // Return the promise from counterRef.set() so our function 
+
+    // Return the promise from counterRef.set() so our function
     // waits for this async event to complete before it exits.
     return collectionRef.once('value')
       .then(messagesData => counterRef.set(messagesData.numChildren()));

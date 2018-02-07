@@ -59,7 +59,11 @@ exports.redirect = functions.https.onRequest((req, res) => {
   cookieParser()(req, res, () => {
     const state = req.cookies.state || crypto.randomBytes(20).toString('hex');
     console.log('Setting verification state:', state);
-    res.cookie('state', state.toString(), {maxAge: 3600000, secure: true, httpOnly: true});
+    res.cookie('state', state.toString(), {
+      maxAge: 3600000,
+      secure: true,
+      httpOnly: true
+    });
     const redirectUri = oauth2.authorizationCode.authorizeURL({
       redirect_uri: OAUTH_REDIRECT_URI,
       scope: OAUTH_SCOPES,
@@ -106,10 +110,14 @@ exports.token = functions.https.onRequest((req, res) => {
       return createFirebaseAccount(instagramUserID, userName, profilePic, accessToken)
     }).then(firebaseToken => {
       // Serve an HTML page that signs the user in and updates the user profile.
-      return res.jsonp({token: firebaseToken});
+      return res.jsonp({
+        token: firebaseToken
+      });
     });
   } catch (error) {
-    return res.jsonp({error: error.toString});
+    return res.jsonp({
+      error: error.toString
+    });
   }
 });
 
@@ -126,8 +134,7 @@ function createFirebaseAccount(instagramID, displayName, photoURL, accessToken) 
 
   // Save the access token tot he Firebase Realtime Database.
   const databaseTask = admin.database().ref(`/instagramAccessToken/${uid}`)
-  .set(accessToken);
-
+    .set(accessToken);
   // Create or update the user account.
   const userCreationTask = admin.auth().updateUser(uid, {
     displayName: displayName,

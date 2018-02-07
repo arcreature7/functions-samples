@@ -47,15 +47,36 @@ function reencodeAsync(tempFilePath, targetTempFilePath) {
 function promisifyCommand(command) {
   return new Promise((resolve, reject) => {
     command
-      .on('end', () => {
-        resolve();
-      })
-      .on('error', error => {
-        reject(error);
-      })
-      .run();
-   });
- };
+    .on('end', () => {
+      resolve();
+    })
+    .on('error', error => {
+      reject(error);
+    })
+    .run();
+  });
+}
+
+/**
+ * Utility method to convert audio to mono channel using FFMPEG.
+ */
+function reencodeAsync(tempFilePath, targetTempFilePath) {
+  return new Promise((resolve, reject) => {
+    const command = ffmpeg(tempFilePath)
+    .setFfmpegPath(ffmpeg_static.path)
+    .audioChannels(1)
+    .audioFrequency(16000)
+    .format('flac')
+    .on('error', (err) => {
+      console.log('An error occurred: ' + err.message);
+      reject(err);
+    })
+    .on('end', () => {
+      console.log('Output audio created at', targetTempFilePath);
+    })
+    .save(targetTempFilePath);
+  });
+}
 
 /**
 * When an audio is uploaded in the Storage bucket We generate a mono channel audio automatically using
