@@ -46,12 +46,12 @@ app.get('/:userId?', (req, res) => {
   if (req.params.userId) {
     // client is requesting user-details page with userId
     // load the data for that employee and its direct reports
-    return database.getEmployeeById(req.params.userId).then(resp => {
+    return database.getEmployeeById(req.params.userId).then((resp) => {
       return renderApplication(req.url, res, resp);
     });
   } else {
     // index page. load data for all employees
-    return database.getAllEmployees().then(resp => {
+    return database.getAllEmployees().then((resp) => {
       return renderApplication(req.url, res, resp);
     });
   }

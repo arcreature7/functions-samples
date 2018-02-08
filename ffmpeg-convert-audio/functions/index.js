@@ -23,26 +23,6 @@ const fs = require('fs');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpeg_static = require('ffmpeg-static');
 
-/**
-* Utility method to convert audio to mono channel using FFMPEG.
-*/
-function reencodeAsync(tempFilePath, targetTempFilePath) {
-  return new Promise((resolve, reject) => {
-    const command = ffmpeg(tempFilePath)
-    .setFfmpegPath(ffmpeg_static.path)
-    .audioChannels(1)
-    .audioFrequency(16000)
-    .format('flac')
-    .on('error', (err) => {
-      console.log('An error occurred: ' + err.message);
-      reject(err);
-    })
-    .on('end', () => {
-      console.log('Output audio created at', targetTempFilePath);
-    })
-    .save(targetTempFilePath);
-  });
-}
 
 function promisifyCommand(command) {
   return new Promise((resolve, reject) => {
@@ -82,7 +62,7 @@ function reencodeAsync(tempFilePath, targetTempFilePath) {
  * When an audio is uploaded in the Storage bucket We generate a mono channel audio automatically using
  * node-fluent-ffmpeg.
  */
-exports.generateMonoAudio = functions.storage.object().onChange(event => {
+exports.generateMonoAudio = functions.storage.object().onChange((event) => {
   const object = event.data; // The Storage object.
 
   const fileBucket = object.bucket; // The Storage bucket that contains the file.
